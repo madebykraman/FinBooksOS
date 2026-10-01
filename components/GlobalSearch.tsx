@@ -9,7 +9,7 @@ type Result={id:string;title:string;meta:string;href:string;kind:"Invoice"|"Clie
 type Invoice={id:string;document_number:string;status:string;clients?:{name?:string|null}};
 type Client={id:string;name:string;email?:string|null;company?:string|null};
 type Product={id:string;name:string;unit_price_minor?:number;currency?:string};
-type Payment={id:string;amount_minor:number;currency:string;method:string;clients?:{name?:string|null}};
+type Payment={id:string;amount_minor:number;currency:string;method:string;reference?:string|null;clients?:{name?:string|null}};
 
 const icons={Invoice:FileText,Client:Users,Catalog:Package,Payment:WalletCards};
 
