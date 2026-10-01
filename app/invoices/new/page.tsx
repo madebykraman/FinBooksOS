@@ -5,28 +5,28 @@ import {calculateInvoiceTotals} from "../../../lib/domain/calculations";
 import {ArrowLeft,Check,ChevronDown,Download,Eye,MoreHorizontal,Plus,Send,Trash2} from "lucide-react";
 import styles from "./page.module.css";
 
-type Item={id:number;description:string;qty:number;rate:number;tax:number};
+type Item={id:number;description:string;qty:string;rate:string;tax:string};
 const clients=[{name:"Acme Studio",email:"accounts@acmestudio.co",address:"14 Residency Road, Bengaluru",gstin:"29AAACA1234A1Z5"},{name:"Northstar Media",email:"finance@northstar.media",address:"Mumbai, Maharashtra",gstin:"27AAACN8821D1Z2"}];
 
-const money=(n:number)=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:2}).format(n);
+const money=(minor:bigint)=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:2}).format(Number(minor)/100);
 const uid=()=>Date.now()+Math.floor(Math.random()*1000);
 
 export default function NewInvoicePage(){
  const [client,setClient]=useState(clients[0]);
  const [items,setItems]=useState<Item[]>([
-   {id:1,description:"Brand strategy & creative direction — March retainer",qty:1,rate:45000,tax:18},
-   {id:2,description:"Motion design support",qty:2,rate:7500,tax:18}
+   {id:1,description:"Brand strategy & creative direction — March retainer",qty:"1",rate:"45000",tax:"18"},
+   {id:2,description:"Motion design support",qty:"2",rate:"7500",tax:"18"}
  ]);
  const [note,setNote]=useState("Payment due within 15 days of invoice date.");
  const [saved,setSaved]=useState(true);
- const totals=useMemo(()=>calculateInvoiceTotals(items.map(i=>({quantity:i.qty,unitPrice:i.rate,taxRate:i.tax}))),[items]);
+ const totals=useMemo(()=>calculateInvoiceTotals(items.map(i=>({quantity:i.qty,unitPriceMinor:Math.round(Number(i.rate)*100),taxRate:i.tax}))),[items]);
 
  function update(id:number,key:keyof Item,value:string|number){
    setSaved(false);
-   setItems(items.map(i=>i.id===id?{...i,[key]:key==="description"?String(value):Number(value)}:i));
+   setItems(items.map(i=>i.id===id?{...i,[key]:String(value)}:i));
    window.setTimeout(()=>setSaved(true),700);
  }
- function add(){setItems([...items,{id:uid(),description:"New service",qty:1,rate:0,tax:18}]);setSaved(false)}
+ function add(){setItems([...items,{id:uid(),description:"New service",qty:"1",rate:"0",tax:"18"}]);setSaved(false)}
  function remove(id:number){setItems(items.filter(i=>i.id!==id));setSaved(false)}
 
  return <main className={styles.page}>
@@ -63,7 +63,7 @@ export default function NewInvoicePage(){
           <input type="number" min="0" step="1" value={item.qty} onChange={e=>update(item.id,"qty",e.target.value)}/>
           <div className={styles.moneyInput}><span>₹</span><input type="number" min="0" value={item.rate} onChange={e=>update(item.id,"rate",e.target.value)}/></div>
           <select value={item.tax} onChange={e=>update(item.id,"tax",e.target.value)}><option value={0}>0%</option><option value={5}>5%</option><option value={12}>12%</option><option value={18}>18%</option><option value={28}>28%</option></select>
-          <strong>{money(item.qty*item.rate)}</strong>
+          <strong>{money(BigInt(Math.round(Number(item.qty)*Number(item.rate)*100)))}</strong>
           <button className={styles.iconButton} onClick={()=>remove(item.id)} aria-label="Remove item"><Trash2 size={14}/></button>
         </div>)}
        </div>
@@ -82,8 +82,8 @@ export default function NewInvoicePage(){
         <div className={styles.paperTop}><div><div className={styles.logo}>M</div><strong>FinBooksOS</strong><small>Independent studio</small></div><div className={styles.invoiceLabel}><span>INVOICE</span><b>INV-1043</b><small>01 OCT 2026</small></div></div>
         <div className={styles.paperRule}/>
         <div className={styles.billRow}><div><small>BILLED TO</small><strong>{client.name}</strong><span>{client.address}</span><span>{client.email}</span></div><div><small>DUE</small><strong>16 OCT 2026</strong><span>15 days</span></div></div>
-        <table><thead><tr><th>Description</th><th>Qty</th><th>Rate</th><th>Amount</th></tr></thead><tbody>{items.map(i=><tr key={i.id}><td>{i.description}</td><td>{i.qty}</td><td>{money(i.rate)}</td><td>{money(i.qty*i.rate)}</td></tr>)}</tbody></table>
-        <div className={styles.paperBottom}><div className={styles.paymentNote}><small>PAYMENT TERMS</small><p>{note}</p></div><div className={styles.totalBox}><div><span>Subtotal</span><b>{money(totals.subtotal)}</b></div><div><span>GST</span><b>{money(totals.tax)}</b></div><div className={styles.grand}><span>Total</span><b>{money(totals.total)}</b></div></div></div>
+        <table><thead><tr><th>Description</th><th>Qty</th><th>Rate</th><th>Amount</th></tr></thead><tbody>{items.map(i=><tr key={i.id}><td>{i.description}</td><td>{i.qty}</td><td>{money(BigInt(Math.round(Number(i.rate)*100)))}</td><td>{money(BigInt(Math.round(Number(i.qty)*Number(i.rate)*100)))}</td></tr>)}</tbody></table>
+        <div className={styles.paperBottom}><div className={styles.paymentNote}><small>PAYMENT TERMS</small><p>{note}</p></div><div className={styles.totalBox}><div><span>Subtotal</span><b>{money(totals.subtotalMinor)}</b></div><div><span>GST</span><b>{money(totals.taxMinor)}</b></div><div className={styles.grand}><span>Total</span><b>{money(totals.totalMinor)}</b></div></div></div>
         <div className={styles.paperFooter}><span>Thank you for your business.</span><span>FinBooksOS</span></div>
        </article>
       </div>
