@@ -14,7 +14,7 @@ type DocumentData={
   draft_payload?:{items?:Array<{description?:string;qty?:string;rate?:string;tax?:string}>;note?:string;totals?:{subtotalMinor?:string;taxMinor?:string;totalMinor?:string}};
   clients?:{name?:string;email?:string;address?:string;gstin?:string};
   document_events?:Array<{id:string;event_type:string;created_at:string;metadata?:Record<string,unknown>}>;
-  document_versions?:Array<{id:string;version_number:number;created_at:string;issued_snapshot?:Record<string,unknown>}>;
+  document_versions?:Array<{id:string;version:number;created_at:string;snapshot?:Record<string,unknown>}>;
   public_token?:string|null;
 };
 
@@ -30,7 +30,7 @@ export default function InvoiceDetailPage({params}:{params:Promise<{id:string}>}
 
   const items=doc?.draft_payload?.items??[];
   const events=useMemo(()=>[...(doc?.document_events??[])].sort((a,b)=>b.created_at.localeCompare(a.created_at)),[doc]);
-  const version=doc?.document_versions?.slice().sort((a,b)=>b.version_number-a.version_number)[0];
+  const version=doc?.document_versions?.slice().sort((a,b)=>b.version-a.version)[0];
 
   if(loading)return <main className={styles.page}><div className={styles.loading}>Loading invoice…</div></main>;
   if(error||!doc)return <main className={styles.page}><div className={styles.error}>{error||"Invoice not found"}<a href="/invoices">Back to invoices</a></div></main>;
@@ -50,7 +50,7 @@ export default function InvoiceDetailPage({params}:{params:Promise<{id:string}>}
           <table><thead><tr><th>Description</th><th>Qty</th><th>Rate</th><th>Tax</th><th>Amount</th></tr></thead><tbody>{items.map((item,i)=><tr key={i}><td>{item.description||"Untitled service"}</td><td>{item.qty}</td><td>{money(String(Math.round(Number(item.rate??0)*100)))}</td><td>{item.tax??0}%</td><td>{money(String(Math.round(Number(item.qty??0)*Number(item.rate??0)*100)))}</td></tr>)}</tbody></table>
           <div className={styles.totals}><div><span>Subtotal</span><b>{money(doc.draft_payload?.totals?.subtotalMinor)}</b></div><div><span>GST</span><b>{money(doc.draft_payload?.totals?.taxMinor)}</b></div><div className={styles.grand}><span>Total</span><b>{money(doc.draft_payload?.totals?.totalMinor)}</b></div></div>
           {doc.draft_payload?.note&&<div className={styles.note}><small>PAYMENT TERMS</small><p>{doc.draft_payload.note}</p></div>}
-          {version&&<div className={styles.immutable}><CheckCircle2 size={14}/><span>Issued version {version.version_number} is preserved as the historical document record.</span></div>}
+          {version&&<div className={styles.immutable}><CheckCircle2 size={14}/><span>Issued version {version.version} is preserved as the historical document record.</span></div>}
         </div>
       </section>
 
