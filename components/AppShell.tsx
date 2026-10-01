@@ -24,7 +24,7 @@ export default function AppShell({children,title="Overview",subtitle,action}:{ch
    <Link href="/" className={styles.brand}><span className={styles.brandMark}>F</span><span><b>FinBooksOS</b><small>Commercia Route</small></span></Link>
    <div className={styles.groupLabel}>Main menu</div>
    <nav className={styles.nav}>{nav.map(([label,href,Icon])=>{
-    const active=href==="/" ? pathname==="/" : href!="#" && pathname.startsWith(href);
+    const active=href==="/" ? pathname==="/" : href !== "#" && pathname.startsWith(href);
     return <Link href={href} key={label} className={active?styles.active:styles.item}><Icon size={16}/><span>{label}</span>{label==="Invoices"&&<em>4</em>}</Link>
    })}</nav>
    <div className={styles.groupLabel}>Other</div>
