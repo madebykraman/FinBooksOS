@@ -139,7 +139,7 @@ create table public.audit_events (
 create index audit_events_workspace_idx on public.audit_events(workspace_id,created_at desc);
 
 create or replace function public.set_updated_at()
-returns trigger language plpgsql as $$
+returns trigger language plpgsql set search_path = public as $
 begin new.updated_at = now(); return new; end $$;
 
 create trigger workspaces_updated_at before update on public.workspaces for each row execute function public.set_updated_at();
@@ -149,7 +149,7 @@ create trigger products_updated_at before update on public.products for each row
 create trigger documents_updated_at before update on public.documents for each row execute function public.set_updated_at();
 
 create or replace function public.is_workspace_member(target_workspace uuid)
-returns boolean language sql stable security invoker as $$
+returns boolean language sql stable security invoker set search_path = public as $
   select exists(
     select 1 from public.workspace_members wm
     where wm.workspace_id = target_workspace
