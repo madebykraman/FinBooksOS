@@ -186,3 +186,28 @@ create policy "members can read audit events" on public.audit_events for select 
 create policy "members can create audit events" on public.audit_events for insert to authenticated with check (public.is_workspace_member(workspace_id));
 
 grant select, insert, update, delete on all tables in schema public to authenticated;
+
+create or replace function public.issue_document(target_document uuid, issued_payload jsonb, issued_snapshot jsonb)
+returns public.documents
+language plpgsql
+security invoker
+set search_path = public
+as $$
+declare d public.documents;
+begin
+ select * into d from public.documents where id=target_document for update;
+ if d.id is null then raise exception 'Document not found'; end if;
+ if not public.is_workspace_member(d.workspace_id) then raise exception 'Forbidden'; end if;
+ if d.status <> 'DRAFT' then raise exception 'Only draft documents can be issued'; end if;
+ insert into public.document_versions(document_id,version,payload,snapshot,immutable,issued_at,created_by)
+ values(d.id,d.current_version,issued_payload,issued_snapshot,true,now(),(select auth.uid()));
+ update public.documents
+ set status='SENT',issued_at=now()
+ where id=d.id
+ returning * into d;
+ insert into public.document_events(workspace_id,document_id,event_type,actor_user_id,metadata)
+ values(d.workspace_id,d.id,'ISSUED',(select auth.uid()),jsonb_build_object('version',d.current_version));
+ insert into public.audit_events(workspace_id,actor_user_id,entity_type,entity_id,action,after_state)
+ values(d.workspace_id,(select auth.uid()),'document',d.id,'ISSUED',jsonb_build_object('status','SENT','version',d.current_version));
+ return d;
+end $$;
