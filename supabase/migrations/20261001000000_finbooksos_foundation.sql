@@ -211,3 +211,8 @@ begin
  values(d.workspace_id,(select auth.uid()),'document',d.id,'ISSUED',jsonb_build_object('status','SENT','version',d.current_version));
  return d;
 end $$;
+
+alter table public.documents add column if not exists public_token text unique default encode(gen_random_bytes(18),'hex');
+create index if not exists documents_public_token_idx on public.documents(public_token);
+create policy "public can read published documents by token" on public.documents for select to anon using (public_token is not null and status in ('SENT','VIEWED','PARTIALLY_PAID','PAID','OVERDUE'));
+create policy "public can read published document versions" on public.document_versions for select to anon using (exists(select 1 from public.documents d where d.id=document_id and d.public_token is not null and d.status in ('SENT','VIEWED','PARTIALLY_PAID','PAID','OVERDUE')));
