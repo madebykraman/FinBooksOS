@@ -1,18 +1,18 @@
 "use client";
 
-import {useMemo,useState} from "react";
+import {useEffect,useMemo,useState} from "react";
 import {calculateInvoiceTotals} from "../../../lib/domain/calculations";
 import {ArrowLeft,Check,ChevronDown,Download,Eye,MoreHorizontal,Plus,Send,Trash2} from "lucide-react";
 import styles from "./page.module.css";
 
 type Item={id:number;description:string;qty:string;rate:string;tax:string};
-const clients=[{name:"Acme Studio",email:"accounts@acmestudio.co",address:"14 Residency Road, Bengaluru",gstin:"29AAACA1234A1Z5"},{name:"Northstar Media",email:"finance@northstar.media",address:"Mumbai, Maharashtra",gstin:"27AAACN8821D1Z2"}];
+const fallbackClients=[{id:"demo-acme",name:"Acme Studio",email:"accounts@acmestudio.co",address:"14 Residency Road, Bengaluru",gstin:"29AAACA1234A1Z5"},{id:"demo-northstar",name:"Northstar Media",email:"finance@northstar.media",address:"Mumbai, Maharashtra",gstin:"27AAACN8821D1Z2"}];
 
 const money=(minor:bigint)=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:2}).format(Number(minor)/100);
 const uid=()=>Date.now()+Math.floor(Math.random()*1000);
 
 export default function NewInvoicePage(){
- const [client,setClient]=useState(clients[0]);
+ const [clients,setClients]=useState(fallbackClients); const [client,setClient]=useState(fallbackClients[0]); const [documentId,setDocumentId]=useState<string>(); const [syncError,setSyncError]=useState("");
  const [items,setItems]=useState<Item[]>([
    {id:1,description:"Brand strategy & creative direction — March retainer",qty:"1",rate:"45000",tax:"18"},
    {id:2,description:"Motion design support",qty:"2",rate:"7500",tax:"18"}
@@ -20,6 +20,8 @@ export default function NewInvoicePage(){
  const [note,setNote]=useState("Payment due within 15 days of invoice date.");
  const [saved,setSaved]=useState(true);
  const totals=useMemo(()=>calculateInvoiceTotals(items.map(i=>({quantity:i.qty,unitPriceMinor:Math.round(Number(i.rate)*100),taxRate:i.tax}))),[items]);
+ useEffect(()=>{const workspaceId=localStorage.getItem("finbooksos.workspace");if(!workspaceId)return;fetch("/api/clients?workspaceId="+encodeURIComponent(workspaceId)).then(r=>r.ok?r.json():null).then(d=>{if(d?.data?.length){setClients(d.data);setClient(d.data[0])}}).catch(()=>{});},[]);
+ useEffect(()=>{const workspaceId=localStorage.getItem("finbooksos.workspace");if(!workspaceId)return;const timer=window.setTimeout(async()=>{setSaved(false);try{const r=await fetch("/api/documents/draft",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({id:documentId,workspaceId,clientId:client.id.startsWith("demo-")?null:client.id,documentNumber:"INV-1043",issueDate:"2026-10-01",dueDate:"2026-10-16",currency:"INR",payload:{client,items,note,totals:{subtotalMinor:totals.subtotalMinor.toString(),taxMinor:totals.taxMinor.toString(),totalMinor:totals.totalMinor.toString()}}})});const d=await r.json();if(!r.ok)throw new Error(d.error);if(d.data?.id)setDocumentId(d.data.id);setSaved(true);setSyncError("")}catch(e){setSaved(false);setSyncError(e instanceof Error?e.message:"Sync failed")}},650);return()=>window.clearTimeout(timer)},[client,items,note,totals,documentId]);
 
  function update(id:number,key:keyof Item,value:string|number){
    setSaved(false);
@@ -32,7 +34,7 @@ export default function NewInvoicePage(){
  return <main className={styles.page}>
    <header className={styles.topbar}>
      <div className={styles.topLeft}><a href="/" className={styles.back} aria-label="Back to overview"><ArrowLeft size={16}/></a><div><div className={styles.kicker}>Invoices / New</div><h1>New invoice</h1></div></div>
-     <div className={styles.topActions}><span className={saved?styles.saved:styles.saving}>{saved?<><Check size={13}/> Saved</>:<>Saving…</>}</span><button className={styles.ghost}><MoreHorizontal size={17}/></button><button className={styles.secondary}><Download size={15}/> PDF</button><button className={styles.primary}><Send size={15}/> Send invoice</button></div>
+     <div className={styles.topActions}><span className={saved?styles.saved:styles.saving}>{saved?<><Check size={13}/> Saved</>:<>{syncError||"Saving…"}</>}</span><button className={styles.ghost}><MoreHorizontal size={17}/></button><button className={styles.secondary}><Download size={15}/> PDF</button><button className={styles.primary} disabled={!documentId}><Send size={15}/> Send invoice</button></div>
    </header>
 
    <div className={styles.workspace}>
