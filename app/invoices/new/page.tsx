@@ -1,7 +1,7 @@
 "use client";
 
 import {useMemo,useState} from "react";
-import {calculateInvoiceTotals} from "@/lib/domain/calculations";
+import {calculateInvoiceTotals} from "../../../lib/domain/calculations";
 import {ArrowLeft,Check,ChevronDown,Download,Eye,MoreHorizontal,Plus,Send,Trash2} from "lucide-react";
 import styles from "./page.module.css";
 
