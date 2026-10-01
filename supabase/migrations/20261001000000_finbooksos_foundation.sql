@@ -171,7 +171,8 @@ create policy "workspace members can read workspaces" on public.workspaces for s
 create policy "owners can create workspaces" on public.workspaces for insert to authenticated with check (owner_user_id = (select auth.uid()));
 create policy "owners can update workspaces" on public.workspaces for update to authenticated using (owner_user_id = (select auth.uid())) with check (owner_user_id = (select auth.uid()));
 
-create policy "members can read membership" on public.workspace_members for select to authenticated using (user_id = (select auth.uid()) or public.is_workspace_member(workspace_id));
+create policy "users can read own membership" on public.workspace_members for select to authenticated using (user_id = (select auth.uid()));
+create policy "users can create own membership" on public.workspace_members for insert to authenticated with check (user_id = (select auth.uid()));
 create policy "members can read business profiles" on public.business_profiles for select to authenticated using (public.is_workspace_member(workspace_id));
 create policy "members can write business profiles" on public.business_profiles for all to authenticated using (public.is_workspace_member(workspace_id)) with check (public.is_workspace_member(workspace_id));
 create policy "members can access clients" on public.clients for all to authenticated using (public.is_workspace_member(workspace_id)) with check (public.is_workspace_member(workspace_id));
