@@ -1,6 +1,7 @@
 "use client";
 
 import {useMemo,useState} from "react";
+import {calculateInvoiceTotals} from "@/lib/domain/calculations";
 import {ArrowLeft,Check,ChevronDown,Download,Eye,MoreHorizontal,Plus,Send,Trash2} from "lucide-react";
 import styles from "./page.module.css";
 
@@ -18,11 +19,7 @@ export default function NewInvoicePage(){
  ]);
  const [note,setNote]=useState("Payment due within 15 days of invoice date.");
  const [saved,setSaved]=useState(true);
- const totals=useMemo(()=>{
-   const subtotal=items.reduce((s,i)=>s+i.qty*i.rate,0);
-   const tax=items.reduce((s,i)=>s+i.qty*i.rate*i.tax/100,0);
-   return {subtotal,tax,total:subtotal+tax};
- },[items]);
+ const totals=useMemo(()=>calculateInvoiceTotals(items.map(i=>({quantity:i.qty,unitPrice:i.rate,taxRate:i.tax}))),[items]);
 
  function update(id:number,key:keyof Item,value:string|number){
    setSaved(false);
@@ -34,7 +31,7 @@ export default function NewInvoicePage(){
 
  return <main className={styles.page}>
    <header className={styles.topbar}>
-     <div className={styles.topLeft}><a href="/" className={styles.back}><ArrowLeft size={16}/></a><div><div className={styles.kicker}>Invoices / New</div><h1>New invoice</h1></div></div>
+     <div className={styles.topLeft}><a href="/" className={styles.back} aria-label="Back to overview"><ArrowLeft size={16}/></a><div><div className={styles.kicker}>Invoices / New</div><h1>New invoice</h1></div></div>
      <div className={styles.topActions}><span className={saved?styles.saved:styles.saving}>{saved?<><Check size={13}/> Saved</>:<>Saving…</>}</span><button className={styles.ghost}><MoreHorizontal size={17}/></button><button className={styles.secondary}><Download size={15}/> PDF</button><button className={styles.primary}><Send size={15}/> Send invoice</button></div>
    </header>
 
