@@ -6,7 +6,7 @@ import styles from "./page.module.css";
 
 type Row={id:string;document_number:string;status:string;issue_date:string;due_date:string|null;currency:string;draft_payload?:{totals?:{totalMinor?:string}};clients?:{name?:string|null}};
 const money=(minor?:string,currency="INR")=>new Intl.NumberFormat("en-IN",{style:"currency",currency,maximumFractionDigits:2}).format(Number(minor??0)/100);
-const label=(status:string)=>status.replaceAll("_"," ").replace(/\\b\\w/g,c=>c.toUpperCase());
+const label=(status:string)=>status.replaceAll("_"," ").replace(/\b\w/g,c=>c.toUpperCase());
 
 export default function InvoicesPage(){
  const [rows,setRows]=useState<Row[]>([]); const [query,setQuery]=useState(""); const [error,setError]=useState(""); const [loading,setLoading]=useState(true);
