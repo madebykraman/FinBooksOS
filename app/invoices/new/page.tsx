@@ -35,7 +35,7 @@ export default function NewInvoicePage(){
  return <main className={styles.page}>
    <header className={styles.topbar}>
      <div className={styles.topLeft}><a href="/" className={styles.back} aria-label="Back to overview"><ArrowLeft size={16}/></a><div><div className={styles.kicker}>Invoices / New</div><h1>New invoice</h1></div></div>
-     <div className={styles.topActions}><span className={saved?styles.saved:styles.saving}>{saved?<><Check size={13}/> Saved</>:<>{syncError||"Saving…"}</>}</span><button className={styles.ghost}><MoreHorizontal size={17}/></button><button className={styles.secondary}><Download size={15}/> PDF</button><button className={styles.primary} disabled={!documentId} onClick={issue}><Send size={15}/> Issue invoice</button></div>
+     <div className={styles.topActions}><span className={saved?styles.saved:styles.saving}>{saved?<><Check size={13}/> Saved</>:<>{syncError||"Saving…"}</>}</span><button className={styles.ghost}><MoreHorizontal size={17}/></button><button className={styles.secondary} onClick={()=>window.print()}><Download size={15}/> PDF</button><button className={styles.primary} disabled={!documentId} onClick={issue}><Send size={15}/> Issue invoice</button></div>
    </header>
 
    <div className={styles.workspace}>
