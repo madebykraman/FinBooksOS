@@ -23,6 +23,7 @@ export default function NewInvoicePage(){
  useEffect(()=>{const workspaceId=localStorage.getItem("finbooksos.workspace");if(!workspaceId)return;fetch("/api/clients?workspaceId="+encodeURIComponent(workspaceId)).then(r=>r.ok?r.json():null).then(d=>{if(d?.data?.length){setClients(d.data);setClient(d.data[0])}}).catch(()=>{});},[]);
  useEffect(()=>{const workspaceId=localStorage.getItem("finbooksos.workspace");if(!workspaceId)return;const timer=window.setTimeout(async()=>{setSaved(false);try{const r=await fetch("/api/documents/draft",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({id:documentId,workspaceId,clientId:client.id.startsWith("demo-")?null:client.id,documentNumber:"INV-1043",issueDate:"2026-10-01",dueDate:"2026-10-16",currency:"INR",payload:{client,items,note,totals:{subtotalMinor:totals.subtotalMinor.toString(),taxMinor:totals.taxMinor.toString(),totalMinor:totals.totalMinor.toString()}}})});const d=await r.json();if(!r.ok)throw new Error(d.error);if(d.data?.id)setDocumentId(d.data.id);setSaved(true);setSyncError("")}catch(e){setSaved(false);setSyncError(e instanceof Error?e.message:"Sync failed")}},650);return()=>window.clearTimeout(timer)},[client,items,note,totals,documentId]);
 
+ async function issue(){if(!documentId)return;setSaved(false);try{const r=await fetch("/api/documents/issue",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({documentId,payload:{client,items,note,totals:{subtotalMinor:totals.subtotalMinor.toString(),taxMinor:totals.taxMinor.toString(),totalMinor:totals.totalMinor.toString()}}})});const d=await r.json();if(!r.ok)throw new Error(d.error);setSaved(true);setSyncError("Issued");}catch(e){setSyncError(e instanceof Error?e.message:"Unable to issue");setSaved(false)}}
  function update(id:number,key:keyof Item,value:string|number){
    setSaved(false);
    setItems(items.map(i=>i.id===id?{...i,[key]:String(value)}:i));
@@ -34,7 +35,7 @@ export default function NewInvoicePage(){
  return <main className={styles.page}>
    <header className={styles.topbar}>
      <div className={styles.topLeft}><a href="/" className={styles.back} aria-label="Back to overview"><ArrowLeft size={16}/></a><div><div className={styles.kicker}>Invoices / New</div><h1>New invoice</h1></div></div>
-     <div className={styles.topActions}><span className={saved?styles.saved:styles.saving}>{saved?<><Check size={13}/> Saved</>:<>{syncError||"Saving…"}</>}</span><button className={styles.ghost}><MoreHorizontal size={17}/></button><button className={styles.secondary}><Download size={15}/> PDF</button><button className={styles.primary} disabled={!documentId}><Send size={15}/> Send invoice</button></div>
+     <div className={styles.topActions}><span className={saved?styles.saved:styles.saving}>{saved?<><Check size={13}/> Saved</>:<>{syncError||"Saving…"}</>}</span><button className={styles.ghost}><MoreHorizontal size={17}/></button><button className={styles.secondary}><Download size={15}/> PDF</button><button className={styles.primary} disabled={!documentId} onClick={issue}><Send size={15}/> Issue invoice</button></div>
    </header>
 
    <div className={styles.workspace}>
