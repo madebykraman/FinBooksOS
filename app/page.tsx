@@ -1,138 +1,25 @@
 "use client";
-
-import {
-  ArrowDownRight,
-  ArrowUpRight,
-  Bell,
-  ChevronDown,
-  CircleDollarSign,
-  FileText,
-  LayoutDashboard,
-  Menu,
-  Plus,
-  ReceiptText,
-  Search,
-  Settings2,
-  Users,
-  WalletCards,
-} from "lucide-react";
-
-const invoices = [
-  ["INV-1042", "Acme Studio", "₹50,740", "Due soon"],
-  ["INV-1041", "Northstar Media", "₹28,500", "Sent"],
-  ["INV-1039", "Field Notes Co.", "₹76,000", "Overdue"],
-  ["INV-1038", "Aster Works", "₹18,900", "Paid"],
-];
-
-const nav = [
-  ["Overview", "/", LayoutDashboard],
-  ["Invoices", "/invoices", ReceiptText],
-  ["Clients", "/clients", Users],
-  ["Payments", "#", WalletCards],
-  ["Expenses", "#", CircleDollarSign],
-  ["Reports", "#", FileText],
-];
-
-function MiniChart({ tone = "purple" }: { tone?: "purple" | "green" | "orange" }) {
-  const paths = {
-    purple: "M3 42 C22 35 28 48 44 37 S68 22 82 31 S106 47 121 25 S146 10 166 20",
-    green: "M3 43 C18 31 31 37 46 28 S69 34 84 24 S107 29 122 14 S145 20 166 8",
-    orange: "M3 41 C19 40 28 27 43 34 S66 18 80 28 S102 20 117 30 S143 14 166 23",
-  };
-  return (
-    <svg viewBox="0 0 170 50" preserveAspectRatio="none" className={"miniChart " + tone} aria-hidden>
-      <path d={paths[tone]} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function Donut() {
-  return (
-    <div className="donut">
-      <span>₹3.84L</span>
-      <small>collected</small>
-    </div>
-  );
-}
-
-export default function Home() {
-  return (
-    <main className="appShell">
-      <aside className="sideRail">
-        <div className="brandLockup">
-          <span className="brandGlyph">F</span>
-          <div><strong>FinBooksOS</strong><small>Commercia Route</small></div>
-        </div>
-
-        <div className="railLabel">Workspace</div>
-        <nav className="railNav">
-          {nav.map(([label, href, Icon], i) => {
-            const I = Icon as typeof LayoutDashboard;
-            return <a key={String(label)} className={i === 0 ? "railItem active" : "railItem"} href={String(href)}><I size={16}/><span>{String(label)}</span>{label === "Invoices" && <b>4</b>}</a>;
-          })}
-        </nav>
-
-        <div className="railLabel other">Other</div>
-        <nav className="railNav">
-          <a className="railItem" href="#"><Settings2 size={16}/><span>Settings</span></a>
-        </nav>
-
-        <div className="railFooter">
-          <div className="profileDot">A</div>
-          <div><strong>Workspace</strong><small>Independent</small></div>
-          <ChevronDown size={14}/>
-        </div>
-      </aside>
-
-      <section className="dashboard">
-        <header className="dashTop">
-          <div className="mobileBrand"><Menu size={18}/><strong>FinBooksOS</strong></div>
-          <div className="searchBox"><Search size={15}/><input placeholder="Search anything…" aria-label="Search"/></div>
-          <div className="topRight"><button className="iconBtn" aria-label="Notifications"><Bell size={17}/><i/></button><button className="profileBtn"><span>A</span><strong>Workspace</strong><ChevronDown size={13}/></button></div>
-        </header>
-
-        <div className="dashInner">
-          <header className="heroHead">
-            <div><p className="eyebrow">Monday · 1 October 2026</p><h1>Overview</h1><span>Everything important, at a glance.</span></div>
-            <a className="accentButton" href="/invoices/new"><Plus size={16}/> New invoice</a>
-          </header>
-
-          <section className="metricGrid">
-            <article className="metricCard primaryMetric"><div className="metricIcon"><WalletCards size={17}/></div><div className="metricLabel">Outstanding</div><strong>₹1,42,800</strong><small><span className="trend up"><ArrowUpRight size={12}/> 8.4%</span> vs last month</small><MiniChart tone="purple"/></article>
-            <article className="metricCard"><div className="metricIcon green"><ReceiptText size={17}/></div><div className="metricLabel">Paid invoices</div><strong>₹3,84,200</strong><small>14 payments this month</small><MiniChart tone="green"/></article>
-            <article className="metricCard"><div className="metricIcon orange"><ArrowDownRight size={17}/></div><div className="metricLabel">Due soon</div><strong>₹76,400</strong><small>5 invoices · next 7 days</small><MiniChart tone="orange"/></article>
-            <article className="metricCard"><div className="metricIcon red"><CircleDollarSign size={17}/></div><div className="metricLabel">Overdue</div><strong>₹28,500</strong><small><span className="trend down"><ArrowDownRight size={12}/> 2 invoices</span> need attention</small><MiniChart tone="orange"/></article>
-          </section>
-
-          <section className="mainGrid">
-            <article className="panel revenuePanel">
-              <div className="panelHead"><div><p className="eyebrow">Cash flow</p><h2>Receivables</h2></div><div className="segmented"><button className="selected">Monthly</button><button>Weekly</button></div></div>
-              <div className="chartMeta"><strong>₹5,63,982</strong><span><b>+10.6%</b> than last month</span></div>
-              <div className="bigChart">
-                <div className="chartGrid"><span>₹60k</span><span>₹40k</span><span>₹20k</span><span>₹0</span></div>
-                <svg viewBox="0 0 700 250" preserveAspectRatio="none" aria-label="Receivables chart"><path d="M0 215 C35 180 58 208 84 174 S132 193 158 132 S207 152 230 104 S274 135 304 95 S346 72 370 118 S417 154 444 91 S488 118 518 62 S562 81 594 48 S642 86 700 28" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/></svg>
-              </div>
-            </article>
-
-            <article className="panel collectionPanel">
-              <div className="panelHead"><div><p className="eyebrow">This month</p><h2>Collection</h2></div><span className="panelMore">•••</span></div>
-              <div className="collectionBody"><Donut/><div className="legend"><div><i className="dot greenDot"/><span>Paid</span><b>68%</b></div><div><i className="dot purpleDot"/><span>Pending</span><b>22%</b></div><div><i className="dot redDot"/><span>Overdue</span><b>10%</b></div></div></div>
-            </article>
-          </section>
-
-          <section className="lowerGrid">
-            <article className="panel invoicePanel">
-              <div className="panelHead"><div><p className="eyebrow">Receivables</p><h2>Recent invoices</h2></div><a href="/invoices" className="viewLink">View all <ArrowUpRight size={13}/></a></div>
-              <div className="invoiceTable"><div className="invoiceRow invoiceHead"><span>Invoice</span><span>Client</span><span>Amount</span><span>Status</span></div>{invoices.map(([id,client,amount,status])=><a href={"/invoices"} className="invoiceRow" key={id}><span className="mono">{id}</span><span>{client}</span><strong>{amount}</strong><span><i className={"statusPill " + status.toLowerCase().replace(" ","-")}>{status}</i></span></a>)}</div>
-            </article>
-
-            <article className="panel attentionPanel">
-              <div className="panelHead"><div><p className="eyebrow">Action queue</p><h2>Needs attention</h2></div><span className="countBadge">3</span></div>
-              <div className="attentionList"><a href="/invoices"><span className="attentionNumber redText">2</span><div><strong>Overdue invoices</strong><small>Follow up on past-due payments</small></div><ArrowUpRight size={14}/></a><a href="#"><span className="attentionNumber orangeText">2</span><div><strong>Quotes awaiting approval</strong><small>Client action is still pending</small></div><ArrowUpRight size={14}/></a><a href="#"><span className="attentionNumber greenText">1</span><div><strong>Payment received</strong><small>A new payment arrived today</small></div><ArrowUpRight size={14}/></a></div>
-            </article>
-          </section>
-        </div>
-      </section>
-    </main>
-  );
-}
+import {ArrowDownRight,ArrowUpRight,CircleDollarSign,FileText,Plus,ReceiptText,Users,WalletCards} from "lucide-react";
+import AppShell from "../components/AppShell";
+import styles from "./page.module.css";
+const invoices=[["INV-1042","Acme Studio","₹50,740","Due soon"],["INV-1041","Northstar Media","₹28,500","Sent"],["INV-1039","Field Notes Co.","₹76,000","Overdue"],["INV-1038","Aster Works","₹18,900","Paid"]];
+const line=(d:string,t:string)=><svg viewBox="0 0 180 46" preserveAspectRatio="none"><path d={d} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"/></svg>;
+function Metric({icon:Icon,label,value,meta,tone,path}:{icon:typeof WalletCards;label:string;value:string;meta:string;tone:string;path:string}){return <article className={styles.metric}><div className={styles.metricTop}><span className={styles.icon+" "+styles[tone]}><Icon size={15}/></span><span>{label}</span></div><b>{value}</b><small>{meta}</small><div className={styles.mini+" "+styles[tone]}>{line(path,tone)}</div></article>}
+export default function Home(){
+return <AppShell title="Dashboard" subtitle="Your financial position, invoices and cash flow at a glance." action={<a href="/invoices/new" className={styles.primary}><Plus size={14}/> New invoice</a>}>
+<section className={styles.metrics}>
+<Metric icon={WalletCards} label="Outstanding" value="₹1,42,800" meta="8.4% vs last month" tone="purple" path="M2 39 C20 34 30 42 47 31 S71 20 88 29 S111 43 126 22 S149 12 178 20"/>
+<Metric icon={ReceiptText} label="Paid invoices" value="₹3,84,200" meta="14 payments this month" tone="green" path="M2 40 C20 30 33 36 49 26 S72 32 88 21 S111 27 126 13 S150 20 178 8"/>
+<Metric icon={ArrowDownRight} label="Due soon" value="₹76,400" meta="5 invoices · next 7 days" tone="orange" path="M2 38 C21 38 29 26 44 32 S66 17 82 26 S104 18 119 29 S145 13 178 22"/>
+<Metric icon={CircleDollarSign} label="Overdue" value="₹28,500" meta="2 invoices need attention" tone="red" path="M2 34 C21 35 30 23 45 30 S68 18 84 28 S106 17 122 29 S149 13 178 18"/>
+</section>
+<section className={styles.grid}>
+<article className={styles.panel+" "+styles.revenue}><header><div><span>Cash flow</span><h2>Receivables</h2></div><div className={styles.segment}><button className={styles.selected}>Monthly</button><button>Weekly</button></div></header><div className={styles.revenueValue}><b>₹5,63,982</b><span><ArrowUpRight size={11}/> 10.6%</span><small>than last month</small></div><div className={styles.chart}><div className={styles.axis}><span>₹60k</span><span>₹40k</span><span>₹20k</span><span>₹0</span></div><svg viewBox="0 0 700 240" preserveAspectRatio="none"><path d="M0 210 C35 174 58 205 84 169 S132 188 158 128 S207 148 230 101 S274 131 304 91 S346 70 370 114 S417 149 444 87 S488 114 518 59 S562 77 594 45 S642 82 700 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/></svg></div><div className={styles.months}>{["Apr","May","Jun","Jul","Aug","Sep","Oct"].map(m=><span key={m}>{m}</span>)}</div></article>
+<article className={styles.panel+" "+styles.collection}><header><div><span>Performance</span><h2>Collection</h2></div><button className={styles.more}>•••</button></header><div className={styles.collectionBody}><div className={styles.donut}><div><b>68%</b><span>Collected</span></div></div><div className={styles.legend}><div><i className={styles.green}/><span>Paid</span><b>68%</b></div><div><i className={styles.purpleDot}/><span>Pending</span><b>22%</b></div><div><i className={styles.redDot}/><span>Overdue</span><b>10%</b></div></div></div></article>
+</section>
+<section className={styles.grid+" "+styles.second}>
+<article className={styles.panel}><header><div><span>Receivables</span><h2>Recent invoices</h2></div><a href="/invoices">View all <ArrowUpRight size={12}/></a></header><div className={styles.table}><div className={styles.thead}><span>Invoice</span><span>Client</span><span>Amount</span><span>Status</span></div>{invoices.map(([id,client,amount,status])=><a href="/invoices" className={styles.row} key={id}><span className={styles.mono}>{id}</span><span>{client}</span><b>{amount}</b><i className={styles["status_"+status.toLowerCase().replace(" ","_")]}>{status}</i></a>)}</div></article>
+<article className={styles.panel}><header><div><span>Quick actions</span><h2>Needs attention</h2></div><span className={styles.badge}>3</span></header><div className={styles.actions}><a href="/invoices"><span className={styles.actionIcon+" "+styles.red}>2</span><div><b>Overdue invoices</b><small>Follow up on past-due payments</small></div><ArrowUpRight size={13}/></a><a href="#"><span className={styles.actionIcon+" "+styles.orange}>2</span><div><b>Quotes awaiting approval</b><small>Client action is still pending</small></div><ArrowUpRight size={13}/></a><a href="#"><span className={styles.actionIcon+" "+styles.greenText}>1</span><div><b>Payment received</b><small>A new payment arrived today</small></div><ArrowUpRight size={13}/></a></div></article>
+</section>
+<section className={styles.bottomGrid}><article className={styles.panel+" "+styles.spending}><header><div><span>Breakdown</span><h2>Spending</h2></div><span>October</span></header><div className={styles.spendRows}><div><i className={styles.purpleBar}/><span>Investment</span><b>₹1,415</b><small>/ ₹2,000</small></div><div><i className={styles.cyanBar}/><span>Installment</span><b>₹1,567</b><small>/ ₹5,000</small></div><div><i className={styles.orangeBar}/><span>Restaurant</span><b>₹487</b><small>/ ₹1,000</small></div><div><i className={styles.blueBar}/><span>Property</span><b>₹3,890</b><small>/ ₹4,000</small></div></div></article><article className={styles.panel+" "+styles.quick}><header><div><span>Actions</span><h2>Quick transfer</h2></div></header><div className={styles.transfer}><div><span className={styles.transferAvatar}>S</span><div><b>Samsul</b><small>Vendor · ••24</small></div></div><button>Transfer</button></div><div className={styles.transferAmount}><small>Amount</small><b>₹ 0</b></div></article></section>
+</AppShell>}
