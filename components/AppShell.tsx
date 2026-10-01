@@ -2,7 +2,7 @@
 
 import {
   Bell, ChevronDown, CircleDollarSign, FileBarChart2, LayoutDashboard,
-  ReceiptText, Search, Settings2, Users, WalletCards, X
+  ReceiptText, Search, Settings2, Users, WalletCards, X, PackageOpen
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -14,6 +14,7 @@ const nav=[
   ["Clients","/clients",Users],
   ["Payments","/payments",WalletCards],
   ["Expenses","/expenses",CircleDollarSign],
+  ["Catalog","/catalog",PackageOpen],
   ["Reports","/reports",FileBarChart2],
 ] as const;
 
