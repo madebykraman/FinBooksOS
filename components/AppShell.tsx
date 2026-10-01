@@ -12,9 +12,9 @@ const nav=[
   ["Overview","/",LayoutDashboard],
   ["Invoices","/invoices",ReceiptText],
   ["Clients","/clients",Users],
-  ["Payments","#",WalletCards],
-  ["Expenses","#",CircleDollarSign],
-  ["Reports","#",FileBarChart2],
+  ["Payments","/payments",WalletCards],
+  ["Expenses","/expenses",CircleDollarSign],
+  ["Reports","/reports",FileBarChart2],
 ] as const;
 
 export default function AppShell({children,title="Overview",subtitle,action}:{children:React.ReactNode;title?:string;subtitle?:string;action?:React.ReactNode}){
@@ -28,7 +28,7 @@ export default function AppShell({children,title="Overview",subtitle,action}:{ch
     return <Link href={href} key={label} className={active?styles.active:styles.item}><Icon size={16}/><span>{label}</span>{label==="Invoices"&&<em>4</em>}</Link>
    })}</nav>
    <div className={styles.groupLabel}>Other</div>
-   <nav className={styles.nav}><Link href="#" className={styles.item}><Settings2 size={16}/><span>Settings</span></Link></nav>
+   <nav className={styles.nav}><Link href="/settings" className={styles.item}><Settings2 size={16}/><span>Settings</span></Link></nav>
    <div className={styles.sidebarBottom}><span className={styles.avatar}>A</span><span><b>Workspace</b><small>Independent</small></span><ChevronDown size={14}/></div>
   </aside>
   <section className={styles.content}>
