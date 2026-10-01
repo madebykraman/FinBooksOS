@@ -7,6 +7,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./AppShell.module.css";
+import GlobalSearch from "./GlobalSearch";
 
 const nav=[
   ["Overview","/",LayoutDashboard],
@@ -36,7 +37,7 @@ export default function AppShell({children,title="Overview",subtitle,action}:{ch
   <section className={styles.content}>
    <header className={styles.topbar}>
     <div className={styles.mobileTitle}><span className={styles.mobileMark}>F</span><b>FinBooksOS</b></div>
-    <label className={styles.search}><Search size={15}/><input placeholder="Search anything…" aria-label="Search anything"/></label>
+    <GlobalSearch />
     <div className={styles.topActions}><button className={styles.icon} aria-label="Notifications"><Bell size={16}/><i/></button><button className={styles.profile}><span>A</span><b>Workspace</b><ChevronDown size={13}/></button></div>
    </header>
    <div className={styles.inner}>
